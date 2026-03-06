@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gombal Interaktif</title>
+<style>
+body, html {margin:0; padding:0; font-family:sans-serif; overflow-x:hidden;}
+.page {width:100vw; height:100vh; display:none; flex-direction:column; align-items:center; justify-content:center; position:relative;}
+.page.active {display:flex;}
+input, button, textarea {padding:8px; margin:5px; border-radius:5px; border:1px solid #ccc; font-size:16px;}
+button {cursor:pointer;}
+.emoji {position:absolute; animation-name:fall; animation-timing-function:linear; animation-iteration-count:infinite;}
+@keyframes fall {0%{top:-10%;}100%{top:110%;}}
+#adminPage, #emailPopup, #loginPopup{position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); display:none; flex-direction:column; align-items:center; justify-content:center; color:#fff; z-index:999;}
+#adminPage div, #loginPopup div, #emailPopup div {background:#222; padding:15px; border-radius:10px;}
+a {color:white; text-decoration:none; margin:5px; display:inline-block;}
+</style>
+</head>
+<body>
+
+<!-- Halaman 1 -->
+<div id="page1" class="page active">
+<h2>Selamat datang →</h2>
+<input id="username" placeholder="Masukkan namamu"/>
+<div>
+<button id="okeBtn">OKE</button>
+<button id="shareBtn">Share</button>
+<button id="redeemBtn">Redeem Voucher</button>
+<button id="infoBtn">Info</button>
+<button id="adminLoginBtn">Akses Login</button>
+</div>
+<div style="position:absolute;top:10px;right:10px;">BY:PZZX/Adam</div>
+<div style="position:absolute;top:50px;right:10px;">Poin: <span id="points">0</span></div>
+</div>
+
+<!-- Halaman 2 -->
+<div id="page2" class="page">
+<h2 id="gombalText">Ucapan Gombal</h2>
+<div>
+<button id="acakBtn">Acak</button>
+<button id="backBtn">Klik Deh</button>
+<button id="secretBtn">🙈</button>
+</div>
+</div>
+
+<!-- Halaman 3 -->
+<div id="page3" class="page">
+<h1>I LOVE YOU</h1>
+<div style="position:absolute; top:10px; left:10px;">V2</div>
+</div>
+
+<!-- Email Popup -->
+<div id="emailPopup">
+<div>
+<h3>Kirim Surat</h3>
+<input id="senderName" placeholder="Nama Pengirim"/>
+<input id="receiverName" placeholder="Nama Penerima"/>
+<textarea id="letterContent" placeholder="Tulis suratmu disini"></textarea>
+<button id="sendLetter">Kirim</button>
+<button id="shareWA">Share WA</button>
+<button id="shareEmail">Share Email</button>
+<button id="closeEmail">Tutup</button>
+</div>
+</div>
+
+<!-- Login Admin -->
+<div id="loginPopup">
+<div>
+<h3>Login Admin</h3>
+<input id="loginUsername" placeholder="Nama akun"/>
+<input id="loginPassword" placeholder="Password" type="password"/>
+<button id="loginOkBtn">Oke</button>
+<button id="loginClose">Tutup</button>
+</div>
+</div>
+
+<!-- Admin Costum -->
+<div id="adminPage">
+<div>
+<h3>Admin Costum</h3>
+<input id="newGombal" placeholder="Ucapan gombal baru"/>
+<button id="addGombalBtn">Tambah Gombal</button>
+<button id="resetGombalBtn">Reset Gombal</button>
+<br/>
+<input id="voucherCodeInput" placeholder="Kode Voucher"/>
+<input id="voucherPointInput" placeholder="Poin"/>
+<button id="addVoucherBtn">Tambah Voucher</button>
+<button id="resetVoucherBtn">Reset Voucher</button>
+<br/>
+<button id="resetPointsBtn">Reset Poin Pemain</button>
+<br/>
+<button id="adminClose">Tutup Admin</button>
+</div>
+</div>
+
+<script>
+// --- Halaman & tombol ---
+const page1=document.getElementById('page1');
+const page2=document.getElementById('page2');
+const page3=document.getElementById('page3');
+const okeBtn=document.getElementById('okeBtn');
+const acakBtn=document.getElementById('acakBtn');
+const backBtn=document.getElementById('backBtn');
+const secretBtn=document.getElementById('secretBtn');
+const infoBtn=document.getElementById('infoBtn');
+const shareBtn=document.getElementById('shareBtn');
+const redeemBtn=document.getElementById('redeemBtn');
+const usernameInput=document.getElementById('username');
+
+// --- Poin & voucher ---
+let points=0;
+const voucherCodes={'VIVII':5,'CODEMAX':15,'REDEEM2026':12,'GOLD26':8,'PREMIUM26':21};
+function updatePoints(){document.getElementById('points').innerText=points;}
+
+// --- Gombal ---
+let gombalList=[
+"__NAME__, senyummu bikin bunga-bunga iri karena kalah cantik.",
+"__NAME__, kalau kamu jadi bunga, aku pasti jadi lebah yang setia.",
+"__NAME__, matamu lebih bersinar dari lampu kota.",
+"__NAME__, suara kamu lebih indah dari musik favoritku.",
+"__NAME__, hari-hariku cerah karena kamu."
+];
+
+// --- Fungsi halaman aktif ---
+function showPage(page){
+  page1.classList.remove('active');
+  page2.classList.remove('active');
+  page3.classList.remove('active');
+  page.classList.add('active');
+}
+
+// --- Fungsi tampil gombal ---
+function showGombal(name){
+  if(points<5){alert("Poin kurang untuk acak ucapan!"); return;}
+  points-=5; updatePoints();
+  const g=gombalList[Math.floor(Math.random()*gombalList.length)].replace(/__NAME__/g,name);
+  document.getElementById('gombalText').innerText=g;
+}
+
+// --- Event Halaman 1 ke 2 ---
+okeBtn.addEventListener('click',()=>{
+  const name=usernameInput.value.trim();
+  if(!name) return alert("Isi nama dulu!");
+  showPage(page2);
+  showGombal(name);
+});
+
+// --- Halaman 2 tombol ---
+acakBtn.addEventListener('click',()=>{
+  const name=usernameInput.value.trim();
+  showGombal(name);
+});
+backBtn.addEventListener('click',()=>{ showPage(page1); });
+secretBtn.addEventListener('click',()=>{
+  showPage(page3);
+  for(let i=0;i<40;i++){
+    let e=document.createElement('div'); e.className='emoji'; e.innerText='👍';
+    e.style.left=Math.random()*100+'vw';
+    e.style.animationDuration=(5+Math.random()*5)+'s';
+    e.style.fontSize=(20+Math.random()*20)+'px';
+    page3.appendChild(e);
+  }
+});
+
+// --- Info ---
+infoBtn.addEventListener('click',()=>{alert("Halo, nama aku Adam. Aku orang yang suka sesuatu hal yg menarik, dan selalu penasaran buat belajar hal baru. Aku juga senang bertemu orang-orang baru, tukar ide, dan kalau bisa, bikin hari-hari lebih seru. 😊");});
+
+// --- Share Surat ---
+const emailPopup=document.getElementById('emailPopup');
+const closeEmail=document.getElementById('closeEmail');
+const sendLetter=document.getElementById('sendLetter');
+const shareWA=document.getElementById('shareWA');
+const shareEmail=document.getElementById('shareEmail');
+
+shareBtn.addEventListener('click',()=>{emailPopup.style.display='flex';});
+closeEmail.addEventListener('click',()=>{emailPopup.style.display='none';});
+sendLetter.addEventListener('click',()=>{
+  const sender=document.getElementById('senderName').value.trim();
+  const receiver=document.getElementById('receiverName').value.trim();
+  const content=document.getElementById('letterContent').value.trim();
+  if(!sender||!receiver||!content) return alert("Isi semua form dulu!");
+  alert(`Surat berhasil dikirim!\nDari: ${sender}\nKepada: ${receiver}\n\n${content}`);
+  emailPopup.style.display='none';
+  document.getElementById('senderName').value='';
+  document.getElementById('receiverName').value='';
+  document.getElementById('letterContent').value='';
+});
+shareWA.addEventListener('click',()=>{
+  const sender=document.getElementById('senderName').value.trim();
+  const receiver=document.getElementById('receiverName').value.trim();
+  const content=document.getElementById('letterContent').value.trim();
+  if(!sender||!receiver||!content) return alert("Isi semua form dulu!");
+  const text=`Dari: ${sender}\nKepada: ${receiver}\n\n${content}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+});
+shareEmail.addEventListener('click',()=>{
+  const sender=document.getElementById('senderName').value.trim();
+  const receiver=document.getElementById('receiverName').value.trim();
+  const content=document.getElementById('letterContent').value.trim();
+  if(!sender||!receiver||!content) return alert("Isi semua form dulu!");
+  window.open(`mailto:?subject=${encodeURIComponent('Surat dari '+sender)}&body=${encodeURIComponent(content)}`);
+});
+
+// --- Admin Costum ---
+const loginPopup=document.getElementById('loginPopup');
+const loginBtn=document.getElementById('adminLoginBtn');
+const loginClose=document.getElementById('loginClose');
+const loginOkBtn=document.getElementById('loginOkBtn');
+const adminPage=document.getElementById('adminPage');
+const adminClose=document.getElementById('adminClose');
+
+const addGombalBtn=document.getElementById('addGombalBtn');
+const resetGombalBtn=document.getElementById('resetGombalBtn');
+const newGombal=document.getElementById('newGombal');
+
+const addVoucherBtn=document.getElementById('addVoucherBtn');
+const resetVoucherBtn=document.getElementById('resetVoucherBtn');
+const voucherCodeInput=document.getElementById('voucherCodeInput');
+const voucherPointInput=document.getElementById('voucherPointInput');
+
+const resetPointsBtn=document.getElementById('resetPointsBtn');
+
+loginBtn.addEventListener('click',()=>{loginPopup.style.display='flex';});
+loginClose.addEventListener('click',()=>{loginPopup.style.display='none';});
+loginOkBtn.addEventListener('click', ()=>{
+    const user=document.getElementById('loginUsername').value.trim();
+    const pass=document.getElementById('loginPassword').value.trim();
+    if((user==='admin'||user==='Spirit'||user==='Hsy') && pass==='AdminAkses871'){
+        alert("Login Admin Berhasil!");
+        loginPopup.style.display='none';
+        adminPage.style.display='flex';
+        document.getElementById('loginUsername').value='';
+        document.getElementById('loginPassword').value='';
+    } else alert("Nama akun atau password salah!");
+});
+adminClose.addEventListener('click',()=>{adminPage.style.display='none';});
+
+// Tambah/reset gombal
+addGombalBtn.addEventListener('click',()=>{
+    const text=newGombal.value.trim();
+    if(!text) return alert("Isi ucapan dulu!");
+    gombalList.push(text);
+    alert("Ucapan gombal berhasil ditambahkan!");
+    newGombal.value='';
+});
+resetGombalBtn.addEventListener('click',()=>{
+    if(confirm("Yakin reset semua gombal?")){gombalList=[]; alert("Gombal direset!");}
+});
+
+// Tambah/reset voucher
+addVoucherBtn.addEventListener('click',()=>{
+    const code=voucherCodeInput.value.trim().toUpperCase();
+    const val=parseInt(voucherPointInput.value);
+    if(!code||!val) return alert("Isi kode dan poin!");
+    voucherCodes[code]=val;
+    alert(`Voucher ${code} ditambahkan dengan ${val} poin`);
+    voucherCodeInput.value=''; voucherPointInput.value='';
+});
+resetVoucherBtn.addEventListener('click',()=>{
+    if(confirm("Yakin reset semua voucher?")){voucherCodes={}; alert("Voucher direset!");}
+});
+
+// Reset poin
+resetPointsBtn.addEventListener('click',()=>{
+    if(confirm("Yakin reset poin pemain?")){points=0; updatePoints(); alert("Poin direset!");}
+});
+
+// --- Redeem Voucher ---
+redeemBtn.addEventListener('click',()=>{
+    const code=prompt("Masukkan kode voucher:").trim().toUpperCase();
+    if(voucherCodes[code]){
+        points+=voucherCodes[code];
+        updatePoints();
+        alert(`Berhasil! Poin +${voucherCodes[code]}`);
+    } else alert("Kode voucher salah!");
+});
+
+// --- Animasi bunga ---
+for(let i=0;i<50;i++){
+    let f=document.createElement('div'); f.className='emoji'; f.innerText='🌸';
+    f.style.left=Math.random()*100+'vw';
+    f.style.animationDuration=(5+Math.random()*5)+'s';
+    f.style.fontSize=(15+Math.random()*20)+'px';
+    page1.appendChild(f);
+}
+</script>
+</body>
+</html>
